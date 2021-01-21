@@ -7,6 +7,7 @@ import org.hibernate.cfg.Configuration;
 import com.luv2code.hibernate.demo.entity.Course;
 import com.luv2code.hibernate.demo.entity.Instructor;
 import com.luv2code.hibernate.demo.entity.InstructorDetail;
+import com.luv2code.hibernate.demo.entity.Review;
 import com.luv2code.hibernate.demo.entity.Student;
 
 public class CreateCourseAndReviewsDemo {
@@ -18,6 +19,7 @@ public class CreateCourseAndReviewsDemo {
 								 .addAnnotatedClass(Instructor.class)
 								 .addAnnotatedClass(InstructorDetail.class)
 								 .addAnnotatedClass(Course.class)
+								 .addAnnotatedClass(Review.class)
 								 .buildSessionFactory();
 		
 		Session session = factory.getCurrentSession();
@@ -26,21 +28,20 @@ public class CreateCourseAndReviewsDemo {
 			// Start transaction
 			session.beginTransaction();
 			
-			// Get the instructor from database
-			int theID = 1;
-			Instructor tempInstructor = session.get(Instructor.class, theID);
+			// Create a course
+			Course tempCourse = new Course("Pacman - How To Score One Million Points");
 			
-			// Create courses
-			Course tempCourse1 = new Course("Air Guitar - The Ultimate Guide");
-			Course tempCourse2 = new Course("The Pinball Masterclass");
+			// Add some reviews
+			tempCourse.addReview(new Review("Great course ... loved it!"));
+			tempCourse.addReview(new Review("Cool course, job well done"));
+			tempCourse.addReview(new Review("What a dumb course, you are an idiot!"));
 			
-			// Add courses to instructor
-			tempInstructor.add(tempCourse1);
-			tempInstructor.add(tempCourse2);
+			// Save the course, note: course has cascade all mapped to reviews
+			System.out.println("Saving the course");
+			System.out.println(tempCourse);
+			System.out.println(tempCourse.getReviews());
 			
-			// Save the courses
-			session.save(tempCourse1);
-			session.save(tempCourse2);
+			session.save(tempCourse);
 			
 			// Commit transaction
 			session.getTransaction().commit();
